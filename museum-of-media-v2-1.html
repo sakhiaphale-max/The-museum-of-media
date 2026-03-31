@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Museum of Media — Vishwa Aphale</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Cormorant Garamond',serif;cursor:none}
+
+/* CURSOR */
+#cur{position:fixed;width:22px;height:22px;border:2px solid rgba(196,130,42,.8);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .2s;z-index:9999;mix-blend-mode:exclusion}
+#cur.h{width:38px;height:38px;border-color:#f5c842}
+#cdot{position:fixed;width:5px;height:5px;background:#f5c842;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:9999}
+
+/* SCREENS & ROOMS */
+.screen{position:fixed;inset:0;display:none;opacity:0;transition:opacity 1s ease}
+.screen.active{opacity:1}
+.room{position:fixed;inset:0;display:none;overflow:hidden}
+.room.active{display:block}
+
+/* WIPE */
+#wipe{position:fixed;inset:0;z-index:800;background:#000;pointer-events:none;opacity:0;transition:opacity .6s}
+
+/* GRAIN */
+body::after{content:'';position:fixed;inset:0;z-index:900;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.032;pointer-events:none}
+
+/* ── ANIMATIONS ── */
+@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{from{transform:scaleX(1) rotate(-2deg)}to{transform:scaleX(.88) scaleY(1.12) rotate(2deg)}}
+@keyframes gp{from{opacity:.55}to{opacity:1}}
+@keyframes hprise{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.7}90%{opacity:.2}100%{transform:translateY(-10px) translateX(var(--dx));opacity:0}}
+
+/* ══════════════════ HOME ══════════════════ */
+#home{
+  background:radial-gradient(ellipse 100% 80% at 50% 100%,#1a0e05 0%,#000 60%);
+  display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center
+}
+#home.active{display:flex}
+.h-parts{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hp{position:absolute;width:2px;height:2px;background:#c4822a;border-radius:50%;animation:hprise linear infinite;opacity:0}
+.torch{position:absolute;bottom:0;width:50px}
+.torch.l{left:7%}.torch.r{right:7%}
+.torch-flame{width:20px;height:38px;background:radial-gradient(ellipse at bottom,#fff5,#f5a623 35%,#c4561a 75%,transparent);border-radius:50% 50% 20% 20%;margin:0 auto;animation:fl .45s ease-in-out infinite alternate;box-shadow:0 0 32px 14px rgba(196,130,42,.28)}
+.torch-body{width:8px;height:72px;background:linear-gradient(180deg,#5c3d1e,#2a1508);border-radius:2px;margin:0 auto}
+.h-cnt{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px}
+.h-eyebrow{font-family:'Cinzel Decorative',cursive;font-size:.58rem;letter-spacing:.44em;color:#c4822a;opacity:0;animation:fi 1s .4s forwards}
+.h-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(2rem,5.5vw,4.8rem);color:#ede0c4;line-height:1.1;text-shadow:0 0 60px rgba(196,130,42,.35);opacity:0;animation:fi 1s .7s forwards}
+.h-title em{color:#c4822a;font-style:normal}
+.h-rule{width:110px;height:1px;background:linear-gradient(90deg,transparent,#c4822a,transparent);opacity:0;animation:fi 1s 1s forwards}
+.h-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(.85rem,1.8vw,1.1rem);color:#9a7a50;max-width:460px;line-height:1.75;opacity:0;animation:fi 1s 1.2s forwards}
+.h-proj{font-family:'Cinzel Decorative',cursive;font-size:.52rem;letter-spacing:.3em;color:#5a4028;opacity:0;animation:fi 1s 1.5s forwards}
+.h-author{font-family:'IM Fell English',serif;font-style:italic;font-size:.95rem;color:#7a6040;opacity:0;animation:fi 1s 1.7s forwards}
+.enter-btn{font-family:'Cinzel Decorative',cursive;font-size:.7rem;letter-spacing:.3em;color:#0a0804;background:#c4822a;border:none;padding:15px 42px;cursor:none;text-transform:uppercase;position:relative;overflow:hidden;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);transition:transform .2s,box-shadow .3s;opacity:0;animation:fi 1s 2s forwards}
+.enter-btn::before{content:'';position:absolute;inset:0;background:#f5a623;transform:translateX(-100%);transition:transform .4s}
+.enter-btn:hover::before{transform:translateX(0)}
+.enter-btn:hover{box-shadow:0 0 40px rgba(196,130,42,.5);transform:scale(1.03)}
+.enter-btn span{position:relative;z-index:1}
+.h-floor{position:absolute;bottom:30px;font-family:'IM Fell English',serif;font-style:italic;font-size:.75rem;color:#2e1c10;letter-spacing:.18em;opacity:0;animation:fi 2s 2.5s forwards}
+
+/* ══════════════════ NAV / BTNS ══════════════════ */
+.rnav{position:fixed;top:0;left:0;right:0;height:54px;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.rnav-back{font-family:'Cinzel Decorative',cursive;font-size:.55rem;letter-spacing:.22em;background:none;border:none;cursor:none;text-transform:uppercase;display:flex;align-items:center;gap:7px;transition:opacity .2s;opacity:.65;color:inherit}
+.rnav-back:hover{opacity:1}
+.rnav-mid{font-family:'Cinzel Decorative',cursive;font-size:.6rem;letter-spacing:.28em;opacity:.45}
+.rnav-num{font-family:'Cormorant Garamond',serif;font-size:.88rem;opacity:.4}
+.next-btn{position:fixed;bottom:30px;right:34px;font-family:'Cinzel Decorative',cursive;font-size:.58rem;letter-spacing:.22em;background:none;border:1px solid currentColor;padding:11px 22px;cursor:none;text-transform:uppercase;opacity:.5;transition:opacity .3s,transform .2s;z-index:200;color:inherit}
+.next-btn:hover{opacity:1;transform:translateX(4px)}
+.rlabel{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;letter-spacing:.18em;opacity:.3;z-index:200;pointer-events:none}
+
+/* ══════════════════ MODAL ══════════════════ */
+#modal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(6px)}
+#modal.open{opacity:1;pointer-events:all}
+.mbox{background:rgba(10,6,2,.97);border:1px solid rgba(196,130,42,.28);max-width:580px;width:92%;padding:38px;position:relative;transform:translateY(18px);transition:transform .4s;box-shadow:0 0 80px rgba(0,0,0,.9),inset 0 1px 0 rgba(196,130,42,.15)}
+#modal.open .mbox{transform:translateY(0)}
+.m-ey{font-family:'Cinzel Decorative',cursive;font-size:.52rem;letter-spacing:.35em;color:#c4822a;margin-bottom:10px}
+.m-ti{font-family:'Cinzel Decorative',cursive;font-size:1.22rem;color:#ede0c4;margin-bottom:17px;line-height:1.3}
+.m-hr{height:1px;background:linear-gradient(90deg,#c4822a,transparent);margin-bottom:17px;opacity:.4}
+.m-body{font-family:'IM Fell English',serif;font-size:.98rem;line-height:1.78;color:#c4a870}
+.m-edit{width:100%;min-height:110px;background:rgba(255,255,255,.04);border:1px solid rgba(196,130,42,.3);color:#c4a870;font-family:'IM Fell English',serif;font-size:.98rem;line-height:1.78;padding:10px 14px;resize:vertical;display:none}
+.m-edit:focus{outline:none;border-color:#c4822a}
+.m-acts{display:flex;gap:10px;margin-top:26px;justify-content:flex-end}
+.mb{font-family:'Cinzel Decorative',cursive;font-size:.52rem;letter-spacing:.18em;padding:9px 18px;border:1px solid;background:none;cursor:none;text-transform:uppercase;transition:background .2s,color .2s}
+.mb.ed{border-color:rgba(196,130,42,.5);color:#c4822a}
+.mb.ed:hover{background:#c4822a;color:#0a0804}
+.mb.sv{border-color:rgba(196,130,42,.5);color:#c4822a;display:none}
+.mb.sv:hover{background:#c4822a;color:#0a0804}
+.mb.cl{border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)}
+.mb.cl:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7)}
+
+/* ══════════════════ GLASS DISPLAY CASE ══════════════════ */
+.dc{position:absolute;cursor:none;z-index:10}
+.dc-glass{
+  position:relative;
+  background:linear-gradient(135deg,rgba(255,255,255,.065) 0%,rgba(255,255,255,.018) 50%,rgba(255,255,255,.055) 100%);
+  border:1px solid rgba(255,255,255,.18);
+  border-top:1px solid rgba(255,255,255,.32);
+  border-left:1px solid rgba(255,255,255,.22);
+  border-radius:2px;
+  transition:box-shadow .35s,transform .3s,border-color .3s;
+  overflow:visible
+}
+/* glass highlight streak */
+.dc-glass::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);pointer-events:none}
+/* inner reflection */
+.dc-glass::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 55%);pointer-events:none;border-radius:2px}
+.dc:hover .dc-glass{
+  box-shadow:0 0 28px rgba(196,130,42,.22),0 0 55px rgba(196,130,42,.08),inset 0 0 18px rgba(255,255,255,.04);
+  border-color:rgba(196,130,42,.48);
+  transform:translateY(-4px)
+}
+.dc-inner{display:flex;align-items:center;justify-content:center;padding:12px}
+.dc-plinth{margin:0 auto;border-radius:0 0 3px 3px}
+.dc-lbl{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);font-family:'Cinzel Decorative',cursive;font-size:.46rem;letter-spacing:.24em;white-space:nowrap;opacity:0;transition:opacity .3s;text-transform:uppercase}
+.dc:hover .dc-lbl{opacity:.85}
+
+/* ══════════════════ ROOM 1 — CAVE ══════════════════ */
+/* Very dim, almost no ambient — fire is the only light source */
+#r1{
+  background:
+    radial-gradient(ellipse 55% 35% at 50% 95%,#2a1505 0%,transparent 50%),
+    radial-gradient(ellipse 25% 80% at 2% 50%,#120b03 0%,transparent 40%),
+    radial-gradient(ellipse 25% 80% at 98% 50%,#120b03 0%,transparent 40%),
+    #060402;
+  color:#c4a870
+}
+#r1 .rnav,#r1 .next-btn,#r1 .rlabel{color:#c4a870}
+.cave-ceil{position:absolute;top:0;left:0;right:0;height:230px;pointer-events:none}
+.cave-wall-l{position:absolute;top:0;bottom:0;left:0;width:180px;background:linear-gradient(90deg,#080502,#120a04,transparent);pointer-events:none}
+.cave-wall-r{position:absolute;top:0;bottom:0;right:0;width:180px;background:linear-gradient(270deg,#080502,#120a04,transparent);pointer-events:none}
+.cave-floor{position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(180deg,transparent,#1a0e05 60%,#0c0703 100%);pointer-events:none}
+.cfire{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:3}
+.cflames{display:flex;justify-content:center}
+.cfl{border-radius:50% 50% 20% 20%;animation:fl ease-in-out infinite alternate;mix-blend-mode:screen}
+.cfl:nth-child(1){width:18px;height:44px;background:radial-gradient(ellipse at bottom,#fff5,#f5a623 45%,#c4561a 85%);animation-duration:.38s}
+.cfl:nth-child(2){width:22px;height:65px;background:radial-gradient(ellipse at bottom,#fff9,#f5a623 30%,#c44a1a 72%,transparent);animation-duration:.55s;margin:0 -5px;z-index:2}
+.cfl:nth-child(3){width:18px;height:40px;background:radial-gradient(ellipse at bottom,#fff5,#f5a623 45%,#c4561a 85%);animation-duration:.47s;animation-delay:.1s}
+.cbase{width:58px;height:14px;background:radial-gradient(ellipse at center,#3a2010,#1a0e05);border-radius:50%;margin:0 auto}
+.cglow{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);width:520px;height:300px;background:radial-gradient(ellipse at center bottom,rgba(196,130,42,.15) 0%,transparent 65%);pointer-events:none;animation:gp 1.5s ease-in-out infinite alternate}
+/* R1 — rough stone stands, very dim */
+#r1 .dc-plinth{background:linear-gradient(180deg,#2e1e0e,#1c1008);border:1px solid #3e2818;border-bottom:2px solid #0d0804}
+#r1 .dc-lbl{color:#c4a870}
+#r1 .dc-glass{background:linear-gradient(135deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.01) 50%,rgba(255,255,255,.04) 100%)}
+
+/* ══════════════════ ROOM 2 — SCRIPTORIUM ══════════════════ */
+/* Warmer, dimly lit with oil lamps — noticeably brighter than cave */
+#r2{
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%,#2a1c08 0%,transparent 55%),
+    radial-gradient(ellipse 40% 80% at 0% 50%,#1c1206 0%,transparent 40%),
+    radial-gradient(ellipse 40% 80% at 100% 50%,#1c1206 0%,transparent 40%),
+    radial-gradient(ellipse 100% 60% at 50% 60%,rgba(200,140,50,.04) 0%,transparent 70%),
+    #0e0b06;
+  color:#d4a96a
+}
+#r2 .rnav,#r2 .next-btn,#r2 .rlabel{color:#d4a96a}
+.r2-col{position:absolute;top:0;bottom:0;width:72px;background:linear-gradient(90deg,#201810,#2c2214,#261c10,#2c2214,#201810);pointer-events:none}
+.r2-col::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0px,transparent 22px,rgba(255,255,255,.022) 22px,rgba(255,255,255,.022) 24px)}
+.r2-col-l{left:52px}.r2-col-r{right:52px}
+.r2-floor{position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(180deg,transparent,#1c1408 45%,#14100a 100%);pointer-events:none}
+.r2-floor::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(196,130,42,.28),transparent)}
+.oilamp{position:absolute;pointer-events:none;z-index:4}
+.lamp-amb{position:absolute;border-radius:50%;background:radial-gradient(ellipse at center,rgba(200,140,50,.13) 0%,transparent 70%);animation:gp 2s ease-in-out infinite alternate;pointer-events:none}
+#r2 .dc-plinth{background:linear-gradient(180deg,#3a3020,#262018);border:1px solid #4a4028;border-bottom:2px solid #1a1810}
+#r2 .dc-lbl{color:#d4a96a}
+
+/* ══════════════════ ROOM 3 — PRESS ══════════════════ */
+/* Moderately bright — candles + window light suggestion. More colour in the air */
+#r3{
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 85%,#2e2412 0%,transparent 55%),
+    radial-gradient(ellipse 60% 90% at 0% 50%,#1e1a0c 0%,transparent 45%),
+    radial-gradient(ellipse 60% 90% at 100% 50%,#1e1a0c 0%,transparent 45%),
+    radial-gradient(ellipse 80% 70% at 50% 30%,rgba(255,230,150,.05) 0%,transparent 70%),
+    #141008;
+  color:#e0d0a8
+}
+#r3 .rnav,#r3 .next-btn,#r3 .rlabel{color:#e0d0a8}
+/* ambient top-down warm wash — simulating window */
+#r3::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,220,140,.04) 0%,transparent 100%);pointer-events:none;z-index:0}
+.r3-floor{position:absolute;bottom:0;left:0;right:0;height:180px;background:linear-gradient(180deg,transparent,#2a1e0c 40%,#1e1608 100%);pointer-events:none}
+.r3-floor::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(220,180,100,.22),transparent)}
+.r3-shelf{position:absolute;bottom:158px;left:5%;right:5%;height:18px;background:linear-gradient(180deg,#4a3418,#3a2810,#2a1e08);border-radius:3px 3px 0 0;box-shadow:0 4px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07)}
+.candle{position:absolute;pointer-events:none;z-index:4}
+.c-flame{width:11px;height:19px;background:radial-gradient(ellipse at bottom,#fff8,#f5a623 40%,#c44a1a 80%,transparent);border-radius:50% 50% 20% 20%;margin:0 auto;animation:fl .4s ease-in-out infinite alternate;box-shadow:0 0 18px 7px rgba(196,130,42,.2)}
+.c-body{background:linear-gradient(90deg,#d4c090,#e8d8a0,#d4c090);margin:0 auto;border-radius:2px 2px 0 0}
+.c-glow{position:absolute;top:-55px;left:50%;transform:translateX(-50%);width:150px;height:150px;background:radial-gradient(ellipse at center,rgba(196,130,42,.1) 0%,transparent 70%);animation:gp 1.8s ease-in-out infinite alternate}
+.press-sil{position:absolute;right:96px;top:55px;opacity:.1;pointer-events:none;z-index:1}
+.type-wm{position:absolute;opacity:.05;pointer-events:none;font-family:'Cinzel Decorative',cursive;z-index:0}
+#r3 .dc-plinth{background:linear-gradient(180deg,#3e2c14,#2c1e0a);border:1px solid #5a3c1c;border-bottom:2px solid #14100a;box-shadow:0 4px 16px rgba(0,0,0,.38)}
+#r3 .dc-lbl{color:#e0d0a8}
+
+/* ══════════════════ COMING SOON ══════════════════ */
+#cs{
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,#120a04 0%,#000 70%);
+  color:#d4b890;display:none;align-items:center;justify-content:center;flex-direction:column
+}
+#cs.active{display:flex}
+.cs-h{font-family:'Cinzel Decorative',cursive;font-size:clamp(1.4rem,4vw,2.6rem);color:#ede0c4;opacity:0;animation:fi 1s .2s forwards}
+.cs-s{font-family:'IM Fell English',serif;font-style:italic;font-size:1rem;color:#6a5030;margin-top:8px;opacity:0;animation:fi 1s .4s forwards}
+.tl{position:relative;display:flex;flex-direction:column;margin-top:42px;width:580px;max-width:92vw}
+.tl::before{content:'';position:absolute;left:7px;top:14px;bottom:14px;width:1px;background:linear-gradient(180deg,transparent,#c4822a 15%,#c4822a 85%,transparent)}
+.tli{display:flex;gap:22px;align-items:center;padding:13px 0;opacity:0;animation:fi .6s forwards}
+.tli:nth-child(1){animation-delay:.5s}.tli:nth-child(2){animation-delay:.7s}.tli:nth-child(3){animation-delay:.9s}
+.tli:nth-child(4){animation-delay:1.1s}.tli:nth-child(5){animation-delay:1.3s}.tli:nth-child(6){animation-delay:1.5s}.tli:nth-child(7){animation-delay:1.7s}
+.tl-dot{width:15px;height:15px;border-radius:50%;flex-shrink:0;z-index:2;border:2px solid #c4822a;background:#000}
+.tl-dot.done{background:#c4822a}
+.tl-info{flex:1}
+.tl-rm{font-family:'Cinzel Decorative',cursive;font-size:.5rem;letter-spacing:.28em;color:#c4822a}
+.tl-nm{font-family:'IM Fell English',serif;font-size:1rem;color:#ede0c4;margin-top:2px}
+.tl-nm.dim{color:#3a2818;font-style:italic}
+.tl-badge{font-family:'Cinzel Decorative',cursive;font-size:.48rem;letter-spacing:.18em;padding:4px 10px;border:1px solid;border-radius:2px;flex-shrink:0}
+.tl-badge.c{color:#c4822a;border-color:#c4822a}
+.tl-badge.s{color:#2a1e10;border-color:#2a1e10}
+.cs-note{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:#3a2818;margin-top:38px;letter-spacing:.15em;opacity:0;animation:fi 1s 2s forwards}
+
+.fog{position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse 55% 55% at 50% 50%,transparent 25%,rgba(0,0,0,.22) 100%)}
+</style>
+</head>
+<body>
+
+<div id="cur"></div><div id="cdot"></div>
+<div id="wipe"></div>
+
+<!-- ═══ MODAL ═══ -->
+<div id="modal">
+  <div class="mbox">
+    <div class="m-ey" id="mey"></div>
+    <h2 class="m-ti" id="mti"></h2>
+    <div class="m-hr"></div>
+    <div class="m-body" id="mbody"></div>
+    <textarea class="m-edit" id="medit" rows="5"></textarea>
+    <div class="m-acts">
+      <button class="mb ed" onclick="toggleEdit()">✎ Edit</button>
+      <button class="mb sv" id="msv" onclick="saveEdit()">✓ Save</button>
+      <button class="mb cl" onclick="closeModal()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="screen" id="home">
+  <div class="h-parts" id="hparts"></div>
+  <div class="torch l"><div class="torch-flame"></div><div class="torch-body"></div></div>
+  <div class="torch r"><div class="torch-flame"></div><div class="torch-body"></div></div>
+  <div class="h-cnt">
+    <p class="h-eyebrow">Media &amp; Communication — Student Project</p>
+    <h1 class="h-title">The Museum<br>of <em>Media</em></h1>
+    <div class="h-rule"></div>
+    <p class="h-sub">Seven rooms. Seven eras. From the first ochre mark on stone to the synthetic worlds of artificial intelligence.</p>
+    <p class="h-proj">University Project — Media Communication Studies</p>
+    <p class="h-author">Created by Vishwa Aphale</p>
+    <button class="enter-btn" onclick="goTo('r1')"><span>Enter the Museum</span></button>
+  </div>
+  <p class="h-floor">— From the first mark, everything changed —</p>
+</div>
+
+<!-- ══════════ ROOM 1 — THE CAVE ══════════ -->
+<div class="room" id="r1">
+  <svg class="cave-ceil" viewBox="0 0 1440 230" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L0,95 Q65,148 108,72 Q148,22 210,95 Q260,152 335,62 Q385,10 448,88 Q500,146 568,57 Q628,2 698,98 Q750,158 818,68 Q870,12 944,92 Q996,152 1066,62 Q1118,6 1195,92 Q1250,152 1316,66 Q1372,14 1440,92 L1440,0 Z" fill="#030201"/>
+    <path d="M0,0 L0,68 Q55,115 108,46 Q158,0 218,70 Q268,126 340,40 Q392,0 455,74 Q506,132 575,46 Q630,2 700,80 Q752,142 820,52 Q872,10 946,78 Q998,134 1068,50 Q1120,8 1198,80 Q1252,138 1318,52 Q1372,8 1440,74 L1440,0 Z" fill="#050302" opacity=".8"/>
+  </svg>
+  <div class="cave-wall-l"></div><div class="cave-wall-r"></div>
+  <div class="cfire">
+    <div class="cflames"><div class="cfl"></div><div class="cfl"></div><div class="cfl"></div></div>
+    <div class="cbase"></div>
+  </div>
+  <div class="cglow"></div>
+  <div class="cave-floor"></div>
+  <div class="fog"></div>
+
+  <div class="rnav">
+    <button class="rnav-back" onclick="goTo('home')">← Entrance</button>
+    <span class="rnav-mid">The Museum of Media</span>
+    <span class="rnav-num">I / VII</span>
+  </div>
+
+  <!-- BISON -->
+  <div class="dc" style="left:7%;bottom:178px" onclick="openArt('r1_bison')">
+    <div class="dc-glass" style="width:138px;height:118px"><div class="dc-inner">
+      <svg width="114" height="90" viewBox="0 0 114 90"><ellipse cx="57" cy="52" rx="42" ry="23" fill="#8b3a1a" opacity=".92"/><ellipse cx="28" cy="44" rx="19" ry="17" fill="#8b3a1a" opacity=".92"/><line x1="40" y1="70" x2="35" y2="86" stroke="#8b3a1a" stroke-width="5" stroke-linecap="round"/><line x1="54" y1="73" x2="51" y2="86" stroke="#8b3a1a" stroke-width="5" stroke-linecap="round"/><line x1="68" y1="73" x2="66" y2="86" stroke="#8b3a1a" stroke-width="5" stroke-linecap="round"/><line x1="82" y1="70" x2="85" y2="86" stroke="#8b3a1a" stroke-width="5" stroke-linecap="round"/><path d="M18,33 Q22,21 28,25" stroke="#c4822a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14,37 Q10,27 18,33" stroke="#c4822a" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="20" cy="40" r="2.5" fill="#c4822a"/><path d="M92,44 Q102,36 97,54" stroke="#8b3a1a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:106px;height:28px"></div>
+    <div class="dc-lbl">The Great Bison</div>
+  </div>
+
+  <!-- HAND -->
+  <div class="dc" style="left:23%;bottom:178px" onclick="openArt('r1_hand')">
+    <div class="dc-glass" style="width:106px;height:132px"><div class="dc-inner">
+      <svg width="84" height="106" viewBox="0 0 80 105"><path d="M32,98 L32,52 L18,52 L18,33 L26,33 L26,52 L32,52 L32,28 L40,28 L40,52 L47,52 L47,25 L55,25 L55,52 L62,52 L62,36 L69,36 L69,57 Q71,73 65,82 Q58,92 50,98 Z" fill="#8b3a1a" opacity=".82"/><circle cx="11" cy="30" r="1.5" fill="#c4822a" opacity=".44"/><circle cx="8" cy="38" r="1" fill="#c4822a" opacity=".34"/><circle cx="6" cy="26" r="1.2" fill="#c4822a" opacity=".3"/><circle cx="15" cy="22" r="1.4" fill="#c4822a" opacity=".34"/><circle cx="5" cy="43" r=".9" fill="#c4822a" opacity=".2"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:84px;height:28px"></div>
+    <div class="dc-lbl">The Hand Stencil</div>
+  </div>
+
+  <!-- HUNT -->
+  <div class="dc" style="left:50%;transform:translateX(-50%);bottom:178px" onclick="openArt('r1_hunt')">
+    <div class="dc-glass" style="width:190px;height:108px"><div class="dc-inner">
+      <svg width="166" height="82" viewBox="0 0 166 82"><ellipse cx="122" cy="48" rx="30" ry="16" fill="#8b3a1a" opacity=".85"/><ellipse cx="96" cy="40" rx="14" ry="13" fill="#8b3a1a" opacity=".85"/><line x1="104" y1="58" x2="100" y2="76" stroke="#8b3a1a" stroke-width="4" stroke-linecap="round"/><line x1="118" y1="62" x2="115" y2="76" stroke="#8b3a1a" stroke-width="4" stroke-linecap="round"/><line x1="132" y1="62" x2="135" y2="76" stroke="#8b3a1a" stroke-width="4" stroke-linecap="round"/><line x1="146" y1="58" x2="150" y2="76" stroke="#8b3a1a" stroke-width="4" stroke-linecap="round"/><path d="M89,30 Q83,18 79,10 M83,24 Q77,19 73,14 M89,30 Q95,18 99,10 M95,24 Q101,18 105,14" stroke="#8b3a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="26" cy="27" r="5.5" fill="#c4822a" opacity=".85"/><line x1="26" y1="33" x2="26" y2="58" stroke="#c4822a" stroke-width="3" stroke-linecap="round"/><line x1="26" y1="41" x2="14" y2="51" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="26" y1="41" x2="50" y2="37" stroke="#c4822a" stroke-width="2" stroke-linecap="round"/><line x1="50" y1="37" x2="91" y2="45" stroke="#c4822a" stroke-width="1.8" stroke-linecap="round"/><path d="M91,45 L96,41 L94,49 Z" fill="#c4822a"/><line x1="26" y1="58" x2="17" y2="76" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="26" y1="58" x2="37" y2="76" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:164px;height:28px;margin:0 auto"></div>
+    <div class="dc-lbl">The Hunt Scene</div>
+  </div>
+
+  <!-- SYMBOL -->
+  <div class="dc" style="right:21%;bottom:178px" onclick="openArt('r1_symbol')">
+    <div class="dc-glass" style="width:106px;height:106px"><div class="dc-inner">
+      <svg width="84" height="84" viewBox="0 0 80 80"><circle cx="40" cy="40" r="17" fill="none" stroke="#c4822a" stroke-width="3" opacity=".88"/><circle cx="40" cy="40" r="7" fill="#8b3a1a" opacity=".75"/><line x1="40" y1="15" x2="40" y2="7" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="40" y1="65" x2="40" y2="73" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="40" x2="7" y2="40" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="65" y1="40" x2="73" y2="40" stroke="#c4822a" stroke-width="2.5" stroke-linecap="round"/><line x1="20" y1="20" x2="14" y2="14" stroke="#c4822a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="20" x2="66" y2="14" stroke="#c4822a" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="60" x2="14" y2="66" stroke="#c4822a" stroke-width="2" stroke-linecap="round"/><line x1="60" y1="60" x2="66" y2="66" stroke="#c4822a" stroke-width="2" stroke-linecap="round"/><line x1="62" y1="60" x2="62" y2="72" stroke="#8b3a1a" stroke-width="2"/><line x1="66" y1="60" x2="66" y2="72" stroke="#8b3a1a" stroke-width="2"/><line x1="70" y1="60" x2="70" y2="72" stroke="#8b3a1a" stroke-width="2"/><line x1="62" y1="63" x2="72" y2="68" stroke="#8b3a1a" stroke-width="1.5"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:84px;height:28px"></div>
+    <div class="dc-lbl">Solar Symbol</div>
+  </div>
+
+  <!-- OCHRE -->
+  <div class="dc" style="right:7%;bottom:178px" onclick="openArt('r1_ochre')">
+    <div class="dc-glass" style="width:90px;height:110px"><div class="dc-inner">
+      <svg width="68" height="86" viewBox="0 0 65 82"><path d="M14,22 Q7,38 9,58 Q11,70 32,70 Q53,70 55,58 Q57,38 50,22 Z" fill="#2a1a0e" stroke="#c4822a" stroke-width="1.5"/><path d="M17,22 Q8,24 10,19 Q14,12 32,10 Q50,12 54,19 Q56,24 47,22" fill="#3a2010" stroke="#c4822a" stroke-width="1.5"/><ellipse cx="32" cy="22" rx="15" ry="5" fill="#5a3018" stroke="#c4822a" stroke-width="1"/><ellipse cx="32" cy="18" rx="11" ry="4" fill="#c4822a" opacity=".7"/><path d="M22,38 Q25,46 22,55" stroke="#c4822a" stroke-width=".8" fill="none" opacity=".4"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:70px;height:28px"></div>
+    <div class="dc-lbl">Ochre Vessel</div>
+  </div>
+
+  <span class="rlabel">Room I — The Cave</span>
+  <button class="next-btn" onclick="goTo('r2')">Next Room →</button>
+</div>
+
+<!-- ══════════ ROOM 2 — THE SCRIPTORIUM ══════════ -->
+<div class="room" id="r2">
+  <div class="r2-col r2-col-l"></div><div class="r2-col r2-col-r"></div>
+
+  <div class="oilamp" style="top:98px;left:126px">
+    <div class="lamp-amb" style="width:220px;height:220px;top:-90px;left:-88px"></div>
+    <svg width="44" height="74" viewBox="0 0 44 74"><ellipse cx="22" cy="60" rx="16" ry="5.5" fill="#2a1a08"/><path d="M13,60 Q8,50 10,40 Q12,33 22,31 Q32,33 34,40 Q36,50 31,60 Z" fill="#3a2010"/><path d="M19,31 L17,23 Q17,17 22,17 Q27,17 27,23 L25,31" fill="#4a2c14"/><path d="M19,17 Q15,13 17,9 Q22,3 27,9 Q29,13 25,17" fill="#5a3418"/><ellipse cx="22" cy="17" rx="4" ry="2" fill="#c4822a" opacity=".65"/><path d="M19,15 Q21,8 22,6 Q23,8 25,15" fill="#f5a623" opacity=".95" style="animation:fl .5s ease-in-out infinite alternate"/></svg>
+  </div>
+  <div class="oilamp" style="top:98px;right:126px">
+    <div class="lamp-amb" style="width:220px;height:220px;top:-90px;left:-88px"></div>
+    <svg width="44" height="74" viewBox="0 0 44 74"><ellipse cx="22" cy="60" rx="16" ry="5.5" fill="#2a1a08"/><path d="M13,60 Q8,50 10,40 Q12,33 22,31 Q32,33 34,40 Q36,50 31,60 Z" fill="#3a2010"/><path d="M19,31 L17,23 Q17,17 22,17 Q27,17 27,23 L25,31" fill="#4a2c14"/><path d="M19,17 Q15,13 17,9 Q22,3 27,9 Q29,13 25,17" fill="#5a3418"/><ellipse cx="22" cy="17" rx="4" ry="2" fill="#c4822a" opacity=".65"/><path d="M19,15 Q21,8 22,6 Q23,8 25,15" fill="#f5a623" opacity=".95" style="animation:fl .5s ease-in-out infinite alternate"/></svg>
+  </div>
+  <div class="r2-floor"></div>
+  <div class="fog"></div>
+
+  <div class="rnav">
+    <button class="rnav-back" onclick="goTo('home')">← Entrance</button>
+    <span class="rnav-mid">The Museum of Media</span>
+    <span class="rnav-num">II / VII</span>
+  </div>
+
+  <!-- PAPYRUS -->
+  <div class="dc" style="left:7%;bottom:188px" onclick="openArt('r2_papyrus')">
+    <div class="dc-glass" style="width:146px;height:186px"><div class="dc-inner" style="padding:9px">
+      <svg width="124" height="162" viewBox="0 0 118 158"><rect x="14" y="14" width="90" height="130" rx="3" fill="#c8a060"/><line x1="22" y1="30" x2="98" y2="30" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="43" x2="98" y2="43" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="56" x2="98" y2="56" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="69" x2="98" y2="69" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="82" x2="98" y2="82" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="95" x2="98" y2="95" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="108" x2="98" y2="108" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="22" y1="121" x2="98" y2="121" stroke="#8b6030" stroke-width=".8" opacity=".5"/><text x="24" y="40" font-size="10" fill="#3a1a08" opacity=".8" font-family="serif">𓂀 𓆗 𓁿 𓇋 𓏤</text><text x="24" y="53" font-size="10" fill="#3a1a08" opacity=".75" font-family="serif">𓅓 𓆑 𓂋 𓅱 𓀭</text><text x="24" y="66" font-size="10" fill="#3a1a08" opacity=".75" font-family="serif">𓊪 𓏏 𓇯 𓃀 𓆙</text><text x="24" y="79" font-size="10" fill="#3a1a08" opacity=".7" font-family="serif">𓐍 𓈖 𓇌 𓏛 𓍯</text><text x="24" y="92" font-size="10" fill="#3a1a08" opacity=".7" font-family="serif">𓂧 𓏥 𓌙 𓆱 𓊃</text><rect x="4" y="10" width="110" height="12" rx="6" fill="#8b5a24"/><rect x="4" y="136" width="110" height="12" rx="6" fill="#8b5a24"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:122px;height:32px"></div>
+    <div class="dc-lbl">Papyrus Scroll</div>
+  </div>
+
+  <!-- TABLET -->
+  <div class="dc" style="left:26%;bottom:188px" onclick="openArt('r2_tablet')">
+    <div class="dc-glass" style="width:162px;height:158px"><div class="dc-inner">
+      <svg width="140" height="134" viewBox="0 0 138 130"><path d="M8,8 Q8,3 14,3 L124,3 Q130,3 130,8 L130,122 Q130,127 124,127 L14,127 Q8,127 8,122 Z" fill="#8b7040" stroke="#6a5228" stroke-width="1.5"/><g fill="#5a3810" opacity=".9"><path d="M22,22 L25,19 L25,32 L22,29 Z M27,19 L27,32"/><path d="M35,22 L38,19 L38,32 L35,29 Z M40,19 L40,32"/><path d="M48,22 L51,19 L51,32 L48,29 Z M53,19 L53,32"/><path d="M61,22 L64,19 L64,32 L61,29 Z"/><path d="M72,22 L75,19 L75,32 L72,29 Z M77,19 L77,32"/><path d="M22,42 L25,39 L25,52 L22,49 Z M27,39 L27,52"/><path d="M35,42 L38,39 L38,52 L35,49 Z"/><path d="M48,42 L51,39 L51,52 L48,49 Z M53,39 L53,52"/><path d="M62,42 L65,39 L65,52 L62,49 Z M67,39 L67,52"/><path d="M78,42 L81,39 L81,52 L78,49 Z"/><path d="M22,62 L25,59 L25,72 L22,69 Z M27,59 L27,72"/><path d="M38,62 L41,59 L41,72 L38,69 Z"/><path d="M52,62 L55,59 L55,72 L52,69 Z M57,59 L57,72"/><path d="M66,62 L69,59 L69,72 L66,69 Z M71,59 L71,72"/><path d="M80,62 L83,59 L83,72 L80,69 Z"/><path d="M22,82 L25,79 L25,92 L22,89 Z M27,79 L27,92"/><path d="M36,82 L39,79 L39,92 L36,89 Z M41,79 L41,92"/><path d="M52,82 L55,79 L55,92 L52,89 Z"/><path d="M65,82 L68,79 L68,92 L65,89 Z M70,79 L70,92"/></g><path d="M8,8 L26,8 M8,8 L8,26" stroke="#c4a060" stroke-width="1.5" fill="none" opacity=".6"/><path d="M130,8 L112,8 M130,8 L130,26" stroke="#c4a060" stroke-width="1.5" fill="none" opacity=".6"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:140px;height:32px"></div>
+    <div class="dc-lbl">Cuneiform Tablet</div>
+  </div>
+
+  <!-- ORACLE BONE -->
+  <div class="dc" style="left:50%;transform:translateX(-50%);bottom:188px" onclick="openArt('r2_oracle')">
+    <div class="dc-glass" style="width:114px;height:190px"><div class="dc-inner">
+      <svg width="90" height="164" viewBox="0 0 88 162"><path d="M18,8 Q8,18 6,40 Q4,70 10,100 Q16,132 28,152 Q38,157 48,152 Q66,142 73,122 Q80,95 78,65 Q76,38 70,18 Q63,3 48,2 Q33,1 18,8 Z" fill="#d4c090" stroke="#a08050" stroke-width="1.5"/><path d="M33,18 Q38,33 36,48 Q34,63 40,78" stroke="#8b6030" stroke-width="1.5" fill="none" opacity=".6"/><path d="M48,28 Q46,43 50,58 Q53,70 48,83" stroke="#8b6030" stroke-width="1.5" fill="none" opacity=".6"/><path d="M36,48 Q42,53 48,50" stroke="#8b6030" stroke-width="1" fill="none" opacity=".5"/><text x="18" y="48" font-size="9" fill="#5a3810" opacity=".75" transform="rotate(-5,18,48)" font-family="serif">甲骨文</text><text x="36" y="78" font-size="8" fill="#5a3810" opacity=".7" transform="rotate(3,36,78)" font-family="serif">卜辞</text><text x="22" y="108" font-size="8" fill="#5a3810" opacity=".65" transform="rotate(-2,22,108)" font-family="serif">吉凶祭</text><circle cx="30" cy="58" r="3.5" fill="#c4a070" stroke="#8b6030" stroke-width="1"/><circle cx="53" cy="68" r="3" fill="#c4a070" stroke="#8b6030" stroke-width="1"/><circle cx="38" cy="93" r="3.5" fill="#c4a070" stroke="#8b6030" stroke-width="1"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:92px;height:32px"></div>
+    <div class="dc-lbl">Oracle Bone</div>
+  </div>
+
+  <!-- ROSETTA -->
+  <div class="dc" style="right:25%;bottom:188px" onclick="openArt('r2_rosetta')">
+    <div class="dc-glass" style="width:124px;height:150px"><div class="dc-inner">
+      <svg width="100" height="126" viewBox="0 0 98 122"><path d="M5,5 L93,5 L93,115 Q58,118 5,115 Z" fill="#5a5048" stroke="#8a7a60" stroke-width="1.5"/><rect x="9" y="12" width="76" height="28" rx="1" fill="none" stroke="#8a7060" stroke-width=".7" opacity=".5"/><rect x="9" y="44" width="76" height="28" rx="1" fill="none" stroke="#8a7060" stroke-width=".7" opacity=".5"/><rect x="9" y="76" width="76" height="28" rx="1" fill="none" stroke="#8a7060" stroke-width=".7" opacity=".5"/><text x="13" y="26" font-size="8" fill="#c4b080" opacity=".75" font-family="serif">𓂀𓆗𓁿𓇋𓅓𓆑𓂋</text><text x="13" y="38" font-size="8" fill="#c4b080" opacity=".65" font-family="serif">𓊪𓏏𓇯𓃀𓆙𓐍𓈖</text><text x="13" y="58" font-size="7" fill="#c4b080" opacity=".7" font-family="serif" letter-spacing="2">ⲡⲉⲟⲩⲟⲉⲓⲛ</text><text x="13" y="70" font-size="7" fill="#c4b080" opacity=".6" font-family="serif">ⲛϩⲏⲧ ⲙⲡⲁⲓ</text><text x="13" y="90" font-size="7" fill="#c4b080" opacity=".7" font-family="serif">ΒΑΣΙΛΕΩΣ</text><text x="13" y="101" font-size="7" fill="#c4b080" opacity=".65" font-family="serif">ΠΤΟΛΕΜΑΙΟΥ</text></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:102px;height:32px"></div>
+    <div class="dc-lbl">Rosetta Fragment</div>
+  </div>
+
+  <!-- REED PEN -->
+  <div class="dc" style="right:7%;bottom:188px" onclick="openArt('r2_reed')">
+    <div class="dc-glass" style="width:160px;height:86px"><div class="dc-inner">
+      <svg width="136" height="60" viewBox="0 0 132 56"><ellipse cx="28" cy="36" rx="24" ry="12" fill="#2a1a0e" stroke="#5a3818" stroke-width="1.5"/><ellipse cx="28" cy="33" rx="16" ry="7" fill="#1a0e05" stroke="#8b6030" stroke-width="1"/><ellipse cx="28" cy="32" rx="10" ry="4" fill="#0d0804" stroke="#c4a060" stroke-width=".5" opacity=".5"/><path d="M52,48 L126,5 Q130,2 132,4 Q134,6 131,10 L56,51 Z" fill="#c8a050" stroke="#8b6030" stroke-width="1"/><path d="M52,48 L56,51 Q51,53 48,51 Z" fill="#8b6030"/><path d="M124,7 L128,4 L131,9 L126,11 Z" fill="#3a1a08"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:136px;height:32px"></div>
+    <div class="dc-lbl">Reed Pen &amp; Ink</div>
+  </div>
+
+  <span class="rlabel">Room II — The Scriptorium</span>
+  <button class="next-btn" onclick="goTo('r3')">Next Room →</button>
+</div>
+
+<!-- ══════════ ROOM 3 — THE PRESS ══════════ -->
+<div class="room" id="r3">
+  <svg class="press-sil" width="220" height="325" viewBox="0 0 220 325"><rect x="30" y="210" width="160" height="115" rx="4" fill="#e0d0b0"/><rect x="65" y="148" width="90" height="72" rx="2" fill="#e0d0b0"/><rect x="55" y="126" width="110" height="26" rx="3" fill="#e0d0b0"/><rect x="90" y="22" width="40" height="110" rx="4" fill="#e0d0b0"/><rect x="75" y="14" width="70" height="18" rx="3" fill="#e0d0b0"/><line x1="110" y1="14" x2="178" y2="92" stroke="#e0d0b0" stroke-width="7" stroke-linecap="round"/><circle cx="178" cy="92" r="12" fill="#e0d0b0"/></svg>
+  <div class="type-wm" style="top:3%;left:3%;font-size:clamp(60px,10vw,130px);color:#e0d0a8">Aa</div>
+  <div class="type-wm" style="bottom:8%;right:2%;font-size:clamp(36px,6vw,75px);color:#e0d0a8;transform:rotate(6deg)">Bb Cc</div>
+  <div class="r3-shelf"></div>
+  <div class="r3-floor"></div>
+
+  <div class="candle" style="bottom:180px;left:108px"><div class="c-glow"></div><div class="c-flame"></div><div class="c-body" style="width:13px;height:52px"></div></div>
+  <div class="candle" style="bottom:174px;right:118px"><div class="c-glow"></div><div class="c-flame"></div><div class="c-body" style="width:13px;height:44px"></div></div>
+
+  <div class="rnav">
+    <button class="rnav-back" onclick="goTo('home')">← Entrance</button>
+    <span class="rnav-mid">The Museum of Media</span>
+    <span class="rnav-num">III / VII</span>
+  </div>
+
+  <!-- GUTENBERG BIBLE -->
+  <div class="dc" style="left:7%;bottom:196px" onclick="openArt('r3_gutenberg')">
+    <div class="dc-glass" style="width:114px;height:158px"><div class="dc-inner">
+      <svg width="92" height="134" viewBox="0 0 88 130"><rect x="4" y="4" width="80" height="122" rx="3" fill="#2a1e08"/><rect x="4" y="4" width="11" height="122" rx="2" fill="#1a1205"/><rect x="7" y="20" width="7" height="2" rx="1" fill="#8b6030"/><rect x="7" y="34" width="7" height="2" rx="1" fill="#8b6030"/><rect x="7" y="94" width="7" height="2" rx="1" fill="#8b6030"/><rect x="7" y="108" width="7" height="2" rx="1" fill="#8b6030"/><rect x="18" y="10" width="60" height="110" rx="2" fill="#3a2810" stroke="#8b6030" stroke-width=".5"/><rect x="22" y="15" width="52" height="102" rx="1" fill="none" stroke="#c4a050" stroke-width="1" opacity=".6"/><line x1="48" y1="26" x2="48" y2="70" stroke="#c4a050" stroke-width="2"/><line x1="35" y1="42" x2="61" y2="42" stroke="#c4a050" stroke-width="2"/><line x1="27" y1="80" x2="64" y2="80" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="27" y1="88" x2="64" y2="88" stroke="#8b6030" stroke-width=".8" opacity=".5"/><line x1="27" y1="96" x2="64" y2="96" stroke="#8b6030" stroke-width=".8" opacity=".5"/><rect x="61" y="57" width="13" height="8" rx="2" fill="#c4a050" opacity=".7"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:92px;height:36px"></div>
+    <div class="dc-lbl">Gutenberg Bible</div>
+  </div>
+
+  <!-- OPEN MANUSCRIPT -->
+  <div class="dc" style="left:25%;bottom:196px" onclick="openArt('r3_manuscript')">
+    <div class="dc-glass" style="width:226px;height:164px"><div class="dc-inner">
+      <svg width="200" height="140" viewBox="0 0 196 135"><path d="M98,6 L8,16 L6,125 L98,117 L190,125 L188,16 Z" fill="#e8d8a0" stroke="#a08040" stroke-width="1.5"/><line x1="98" y1="6" x2="98" y2="117" stroke="#8b6030" stroke-width="2"/><path d="M95,6 Q98,3 101,6" fill="#8b6030"/><line x1="18" y1="28" x2="90" y2="28" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="38" x2="90" y2="38" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="48" x2="90" y2="48" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="58" x2="90" y2="58" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="68" x2="90" y2="68" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="78" x2="90" y2="78" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="88" x2="90" y2="88" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="18" y1="98" x2="90" y2="98" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="28" x2="178" y2="28" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="38" x2="178" y2="38" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="48" x2="178" y2="48" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="58" x2="178" y2="58" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="68" x2="178" y2="68" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="78" x2="178" y2="78" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="88" x2="178" y2="88" stroke="#8b6030" stroke-width=".6" opacity=".5"/><line x1="106" y1="98" x2="178" y2="98" stroke="#8b6030" stroke-width=".6" opacity=".5"/><rect x="18" y="18" width="19" height="19" rx="1" fill="#c4a020" opacity=".75"/><text x="22" y="33" font-size="14" fill="#2a1205" font-family="Georgia,serif" font-weight="bold">I</text><rect x="127" y="36" width="36" height="28" rx="2" fill="#c4a020" opacity=".38" stroke="#8b6030" stroke-width=".5"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:200px;height:36px;margin:0 auto"></div>
+    <div class="dc-lbl">Illuminated Manuscript</div>
+  </div>
+
+  <!-- TYPE TRAY -->
+  <div class="dc" style="left:58%;bottom:196px" onclick="openArt('r3_typeblock')">
+    <div class="dc-glass" style="width:148px;height:128px"><div class="dc-inner">
+      <svg width="124" height="104" viewBox="0 0 122 100"><rect x="4" y="4" width="114" height="92" rx="4" fill="#2a1e0c" stroke="#5a3c18" stroke-width="2"/><g fill="#1a1208" stroke="#c4a050" stroke-width=".5"><rect x="11" y="11" width="16" height="20" rx="1"/><rect x="30" y="11" width="16" height="20" rx="1"/><rect x="49" y="11" width="16" height="20" rx="1"/><rect x="68" y="11" width="16" height="20" rx="1"/><rect x="87" y="11" width="20" height="20" rx="1"/><rect x="11" y="34" width="16" height="20" rx="1"/><rect x="30" y="34" width="22" height="20" rx="1"/><rect x="55" y="34" width="16" height="20" rx="1"/><rect x="74" y="34" width="16" height="20" rx="1"/><rect x="93" y="34" width="14" height="20" rx="1"/><rect x="11" y="57" width="20" height="20" rx="1"/><rect x="34" y="57" width="16" height="20" rx="1"/><rect x="53" y="57" width="16" height="20" rx="1"/><rect x="72" y="57" width="22" height="20" rx="1"/><rect x="97" y="57" width="10" height="20" rx="1"/></g><g font-size="9" fill="#c4a050" font-family="Georgia,serif" font-weight="bold" text-anchor="middle"><text x="19" y="26">G</text><text x="38" y="26">u</text><text x="57" y="26">t</text><text x="76" y="26">e</text><text x="97" y="26">n</text><text x="19" y="49">b</text><text x="41" y="49">e</text><text x="63" y="49">r</text><text x="82" y="49">g</text><text x="21" y="72">1</text><text x="42" y="72">4</text><text x="61" y="72">5</text><text x="83" y="72">0</text></g></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:124px;height:36px"></div>
+    <div class="dc-lbl">Type Block Tray</div>
+  </div>
+
+  <!-- BROADSHEET -->
+  <div class="dc" style="right:7%;bottom:196px" onclick="openArt('r3_broadsheet')">
+    <div class="dc-glass" style="width:118px;height:164px"><div class="dc-inner">
+      <svg width="96" height="140" viewBox="0 0 94 135"><rect x="4" y="4" width="86" height="127" rx="2" fill="#f0e0b0" stroke="#c4a050" stroke-width="1"/><rect x="9" y="9" width="76" height="20" rx="1" fill="#2a1205"/><text x="47" y="22" font-size="8" fill="#f0e0b0" text-anchor="middle" font-family="Georgia,serif" font-weight="bold">THE GAZETTE</text><line x1="9" y1="32" x2="85" y2="32" stroke="#8b6030" stroke-width="1.5"/><line x1="48" y1="34" x2="48" y2="124" stroke="#8b6030" stroke-width=".7" opacity=".4"/><line x1="11" y1="40" x2="45" y2="40" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="11" y1="49" x2="45" y2="49" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="11" y1="58" x2="45" y2="58" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="11" y1="67" x2="45" y2="67" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="11" y1="76" x2="45" y2="76" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="52" y1="40" x2="83" y2="40" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="52" y1="49" x2="83" y2="49" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="52" y1="58" x2="83" y2="58" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="52" y1="67" x2="83" y2="67" stroke="#5a3810" stroke-width="1" opacity=".6"/><rect x="11" y="82" width="72" height="26" rx="1" fill="#d4c090" stroke="#8b6030" stroke-width=".5"/><line x1="11" y1="112" x2="83" y2="112" stroke="#5a3810" stroke-width="1" opacity=".6"/><line x1="11" y1="120" x2="70" y2="120" stroke="#5a3810" stroke-width="1" opacity=".6"/></svg>
+    </div></div>
+    <div class="dc-plinth" style="width:96px;height:36px"></div>
+    <div class="dc-lbl">The Broadsheet</div>
+  </div>
+
+  <span class="rlabel">Room III — The Press</span>
+  <button class="next-btn" onclick="goTo('cs')">Next Room →</button>
+</div>
+
+<!-- ══════════ COMING SOON ══════════ -->
+<div class="screen" id="cs">
+  <div class="rnav" style="color:#d4b890">
+    <button class="rnav-back" style="color:#d4b890" onclick="goTo('home')">← Entrance</button>
+    <span class="rnav-mid" style="color:#d4b890">The Museum of Media</span>
+    <span class="rnav-num" style="color:#d4b890">IV – VII</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;padding:68px 20px 40px;overflow-y:auto;height:100%">
+    <h2 class="cs-h">The Journey Continues</h2>
+    <p class="cs-s">Four rooms are under construction</p>
+    <div class="tl">
+      <div class="tli"><div class="tl-dot done"></div><div class="tl-info"><div class="tl-rm">Room I</div><div class="tl-nm">The Cave — Primitive Marks</div></div><div class="tl-badge c">Complete</div></div>
+      <div class="tli"><div class="tl-dot done"></div><div class="tl-info"><div class="tl-rm">Room II</div><div class="tl-nm">The Scriptorium — Ancient Writing</div></div><div class="tl-badge c">Complete</div></div>
+      <div class="tli"><div class="tl-dot done"></div><div class="tl-info"><div class="tl-rm">Room III</div><div class="tl-nm">The Press — Print &amp; Books</div></div><div class="tl-badge c">Complete</div></div>
+      <div class="tli"><div class="tl-dot"></div><div class="tl-info"><div class="tl-rm">Room IV</div><div class="tl-nm dim">Photography &amp; Telegraph</div></div><div class="tl-badge s">Coming</div></div>
+      <div class="tli"><div class="tl-dot"></div><div class="tl-info"><div class="tl-rm">Room V</div><div class="tl-nm dim">Radio &amp; Cinema</div></div><div class="tl-badge s">Coming</div></div>
+      <div class="tli"><div class="tl-dot"></div><div class="tl-info"><div class="tl-rm">Room VI</div><div class="tl-nm dim">Television &amp; Broadcast</div></div><div class="tl-badge s">Coming</div></div>
+      <div class="tli"><div class="tl-dot"></div><div class="tl-info"><div class="tl-rm">Room VII</div><div class="tl-nm dim">AI &amp; Virtual Reality — Full 3D</div></div><div class="tl-badge s">Coming</div></div>
+    </div>
+    <p class="cs-note">— Room VII will be a fully navigable 3D environment —</p>
+  </div>
+</div>
+
+<script>
+/* ── CHIME SOUND ── */
+let audioCtx=null;
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+function playChime(){
+  try{
+    const ctx=getCtx(),now=ctx.currentTime;
+    const notes=[523.25,659.25,783.99,1046.5];
+    // reverb impulse
+    function mkReverb(){
+      const len=ctx.sampleRate*1.4,imp=ctx.createBuffer(2,len,ctx.sampleRate);
+      for(let c=0;c<2;c++){const d=imp.getChannelData(c);for(let n=0;n<len;n++)d[n]=(Math.random()*2-1)*Math.pow(1-n/len,2.8);}
+      const rv=ctx.createConvolver();rv.buffer=imp;return rv;
+    }
+    const rev=mkReverb();rev.connect(ctx.destination);
+    notes.forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0,now+i*.09);
+      g.gain.linearRampToValueAtTime(.26,now+i*.09+.035);
+      g.gain.exponentialRampToValueAtTime(.001,now+i*.09+1.7);
+      o.connect(g);g.connect(rev);g.connect(ctx.destination);
+      o.start(now+i*.09);o.stop(now+i*.09+2);
+    });
+    // shimmer
+    const sh=ctx.createOscillator(),sg=ctx.createGain();
+    sh.type='sine';sh.frequency.value=2093;
+    sg.gain.setValueAtTime(0,now+.28);sg.gain.linearRampToValueAtTime(.07,now+.33);sg.gain.exponentialRampToValueAtTime(.001,now+2.3);
+    sh.connect(sg);sg.connect(ctx.destination);sh.start(now+.28);sh.stop(now+2.5);
+  }catch(e){}
+}
+
+/* ── ARTIFACT DATA ── */
+const DEF={
+  r1_bison:{eyebrow:"Room I — Cave Painting",title:"The Great Bison",body:"Painted with iron oxide ochre and charcoal, this bison is estimated to be over 17,000 years old. Found deep in caves far from natural light, its creation required fire — meaning communication was already tied to technology. The image is not merely decorative: it is a record. This animal exists. It moves like this. It is hunted like this. The first database was a wall."},
+  r1_hand:{eyebrow:"Room I — Cave Painting",title:"The Stenciled Hand",body:"A human blew pigment around their own hand and left a shadow on stone. It is perhaps the oldest surviving sentence: I was here. Hand stencils appear on every inhabited continent, made by peoples with no contact with each other. The gesture is universal because the need is universal — to mark one's existence for those who come after. This is the origin of authorship."},
+  r1_hunt:{eyebrow:"Room I — Cave Painting",title:"The Hunt Scene",body:"This composition shows a coordinated hunt: a human figure with a spear, a fleeing animal. It represents early sequential storytelling — a narrative with cause, action, and implied outcome. Some scholars believe these were not records of past events but rehearsals for future ones. Media as preparation. Communication as a rehearsal for reality."},
+  r1_symbol:{eyebrow:"Room I — Symbol",title:"Solar Symbol with Tally Marks",body:"Circles with radiating lines appear in early cave art across cultures — interpreted as the sun, the moon, or cyclical time. The tally marks alongside suggest counting: days, seasons, cycles of prey. This is the earliest evidence of abstract thinking recorded in a medium. The image no longer points at a thing — it points at an idea."},
+  r1_ochre:{eyebrow:"Room I — Tool",title:"The Ochre Vessel",body:"Red ochre — iron-rich earth — was the first paint. Ground into powder, mixed with animal fat or water, it became the medium itself. Residue of ochre preparation dates back 100,000 years. The vessel is both technology and intention: someone collected, transported, and stored the means to make marks. The first media toolkit."},
+  r2_papyrus:{eyebrow:"Room II — Ancient Writing",title:"The Papyrus Scroll",body:"Made from the pith of the papyrus plant, this scroll represents the first truly portable medium. Egyptians developed papyrus production around 3000 BCE, and with it came the possibility of sending messages across distance — the origin of correspondence. The hieroglyphs encode not just language but an entire cosmology: gods, rulers, harvests, and the afterlife compressed into reusable signs."},
+  r2_tablet:{eyebrow:"Room II — Ancient Writing",title:"Cuneiform Clay Tablet",body:"Cuneiform — from the Latin for 'wedge-shaped' — was pressed into wet clay with a reed stylus and dried in the sun or kiln. Among the oldest surviving cuneiform texts are invoices and grain records. The first written literature was not poetry but accounting. Civilization required media not to celebrate existence, but to track it."},
+  r2_oracle:{eyebrow:"Room II — Ancient Writing",title:"Oracle Bone Script",body:"In Shang Dynasty China (c. 1600–1046 BCE), diviners heated animal bones and tortoise shells until they cracked, then read the fractures as divine messages. Scribes inscribed the question asked and the answer received directly onto the bone. These are the oldest confirmed examples of Chinese writing. Here, media served simultaneously as communication technology and religious ritual."},
+  r2_rosetta:{eyebrow:"Room II — Key Artifact",title:"The Rosetta Stone Fragment",body:"Inscribed in 196 BCE with the same decree in three scripts — hieroglyphics, Demotic, and Ancient Greek — the Rosetta Stone became the key to deciphering Egyptian writing in 1822. It is a meta-media artifact: a text about texts, a medium about communication itself. Its discovery revealed that lost languages are not lost thoughts — they are merely locked formats waiting for the right codec."},
+  r2_reed:{eyebrow:"Room II — Tool",title:"Reed Pen & Ink Stone",body:"The reed pen — cut at an angle and split at the tip — was the primary writing instrument of the ancient world for millennia. Paired with carbon black ink ground on stone, it allowed scribes to produce thousands of characters without pausing. The scribe was the interface between thought and record — a specialized human function that would define literate societies until the printing press made mass copying obsolete."},
+  r3_gutenberg:{eyebrow:"Room III — The Press",title:"The Gutenberg Bible",body:"Johannes Gutenberg's movable type press — active from around 1450 — produced the first mass-printed book in Western history. Before this, a single Bible required months of scribal labour. After it, one could be printed in days. Within 50 years, over 20 million books were in circulation in Europe. The press democratized literacy, destabilized the Church's information monopoly, and made the Protestant Reformation structurally possible."},
+  r3_manuscript:{eyebrow:"Room III — The Press",title:"The Illuminated Manuscript",body:"Before print, books were made one at a time in monasteries — hand-copied by scribes and decorated with gold leaf and vivid pigments by illuminators. Each copy was unique. Errors and embellishments accumulated across generations of copying, making the 'same' text a living, mutating thing. The illuminated manuscript is the last form of book as individual object — singular, irreplaceable, touched by the specific hands that made it."},
+  r3_typeblock:{eyebrow:"Room III — The Press",title:"The Type Block Tray",body:"Each letter of the Gutenberg press was a separate physical object — cast in lead alloy, set by hand, inked, and pressed. The composing stick held one line at a time. To change a word required disassembling it character by character. The type tray is an analogy for modern data: discrete units, individually interchangeable, combinable into infinite messages. The printing press invented modularity."},
+  r3_broadsheet:{eyebrow:"Room III — The Press",title:"The Early Broadsheet",body:"By the late 1400s, single-sheet broadsides were being printed and sold in city markets: announcements, ballads, reports of battles. These were the first newspapers — unreliable, politically biased, and wildly popular. The broadsheet introduced the concept of public information — news as a commodity, truth as something that could be printed and sold. The origin of journalism. And of misinformation."},
+};
+function loadD(){try{const s=localStorage.getItem('mom3');if(s)return Object.assign({},DEF,JSON.parse(s));}catch(e){}return Object.assign({},DEF)}
+function saveOv(k,b){let ov={};try{ov=JSON.parse(localStorage.getItem('mom3')||'{}');}catch(e){}ov[k]={...loadD()[k],body:b};localStorage.setItem('mom3',JSON.stringify(ov))}
+let DATA=loadD(),CK=null;
+
+function openArt(k){
+  playChime();DATA=loadD();CK=k;
+  const d=DATA[k];if(!d)return;
+  document.getElementById('mey').textContent=d.eyebrow;
+  document.getElementById('mti').textContent=d.title;
+  document.getElementById('mbody').textContent=d.body;
+  document.getElementById('mbody').style.display='block';
+  document.getElementById('medit').style.display='none';
+  document.querySelector('.mb.ed').style.display='inline-block';
+  document.getElementById('msv').style.display='none';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');CK=null}
+function toggleEdit(){
+  document.getElementById('medit').value=document.getElementById('mbody').textContent;
+  document.getElementById('mbody').style.display='none';
+  document.getElementById('medit').style.display='block';
+  document.querySelector('.mb.ed').style.display='none';
+  document.getElementById('msv').style.display='inline-block';
+  document.getElementById('medit').focus();
+}
+function saveEdit(){
+  const v=document.getElementById('medit').value.trim();if(!v||!CK)return;
+  saveOv(CK,v);DATA=loadD();
+  document.getElementById('mbody').textContent=v;
+  document.getElementById('mbody').style.display='block';
+  document.getElementById('medit').style.display='none';
+  document.querySelector('.mb.ed').style.display='inline-block';
+  document.getElementById('msv').style.display='none';
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal()});
+
+/* ── NAVIGATION ── */
+let CUR='home',BUSY=false;
+function goTo(id){
+  if(BUSY||id===CUR)return;BUSY=true;
+  const wipe=document.getElementById('wipe');
+  wipe.style.opacity='1';
+  setTimeout(()=>{
+    // hide current
+    const prev=document.getElementById(CUR);
+    if(prev.classList.contains('screen')){prev.classList.remove('active');prev.style.display='none';}
+    else{prev.classList.remove('active');prev.style.display='none';}
+    CUR=id;
+    const next=document.getElementById(id);
+    const isScrn=next.classList.contains('screen');
+    // home and cs use flex, rooms use block
+    const disp=(id==='home'||id==='cs')?'flex':'block';
+    next.style.display=disp;
+    requestAnimationFrame(()=>{
+      next.classList.add('active');
+      wipe.style.opacity='0';
+      setTimeout(()=>{BUSY=false},650);
+    });
+  },620);
+}
+
+/* ── CURSOR ── */
+const C=document.getElementById('cur'),CD=document.getElementById('cdot');
+document.addEventListener('mousemove',e=>{C.style.left=e.clientX+'px';C.style.top=e.clientY+'px';CD.style.left=e.clientX+'px';CD.style.top=e.clientY+'px'});
+document.addEventListener('mouseover',e=>{if(e.target.closest('button,.dc,.mb,.enter-btn'))C.classList.add('h')});
+document.addEventListener('mouseout',e=>{if(e.target.closest('button,.dc,.mb,.enter-btn'))C.classList.remove('h')});
+
+/* ── HOME PARTICLES ── */
+const PP=document.getElementById('hparts');
+for(let i=0;i<36;i++){const p=document.createElement('div');p.className='hp';p.style.cssText=`left:${Math.random()*100}%;animation-duration:${4+Math.random()*9}s;animation-delay:${Math.random()*12}s;--dx:${Math.random()*90-45}px;width:${1+Math.random()*2.5}px;height:${1+Math.random()*2.5}px`;PP.appendChild(p)}
+
+/* ── INIT ── */
+const h=document.getElementById('home');h.style.display='flex';h.classList.add('active');
+</script>
+</body>
+</html>
